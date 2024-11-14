@@ -1,0 +1,65 @@
+#######V3########
+import pytest
+from seleniumwire import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import base64
+
+from config import URL_CITE
+
+@pytest.fixture
+def open_browser():
+  options = webdriver.ChromeOptions()
+  driver = webdriver.Chrome(options=options)
+  driver.get(URL_CITE)
+  yield driver
+  driver.quit()
+
+def test_valid_auth(open_browser):
+  assert "The Internet" in open_browser.title
+
+  # Находим ссылку "Basic Auth" и кликаем по ней
+  basic_auth_link = WebDriverWait(open_browser, timeout=3).until(
+    EC.element_to_be_clickable((By.LINK_TEXT, "Basic Auth"))
+  )
+  basic_auth_link.click()
+
+  # Перехватываем запрос
+  open_browser.request.capture = True # Включаем перехват запросов
+  open_browser.get(URL_CITE + "/basic_auth") # Выполняем запрос, который хотим перехватить
+  
+  # Проверяем список запросов
+  for request in open_browser.request.history:
+    if request.url == URL_CITE + "/basic_auth":
+      # Добавляем заголовок с учетными данными
+      request.headers['Authorization'] = f'Basic {base64.b64encode(b"admin:admin").decode("utf-8")}'
+      break
+
+  # Проверяем успешную авторизацию
+  assert "Basic Auth" not in open_browser.title # The title should have changed
+  assert "This is a protected area." in open_browser.find_element(By.TAG_NAME, 'p').text
+
+if name == "main":
+  pytest.main()
+
+
+#######V2########
+from selenium.webdriver.common.by import By
+from config import URL_CITE, URL_CITE_AUTH
+import time
+
+def test_basic_auth(browser):
+    """Тест авторизации на странице Basic Auth"""
+    browser.get(URL_CITE)  # Use URL_CITE from config.py
+    assert "The Internet" in browser.title
+    time.sleep(2)
+
+    browser.find_element(By.LINK_TEXT, "Basic Auth").click()
+    time.sleep(2)
+    
+    browser.get(URL_CITE_AUTH)
+    element = browser.find_element(By.TAG_NAME, "p")
+    time.sleep(3)
+    assert "Congratulations" in element.text
+

@@ -1,3 +1,4 @@
+test_add_remove_el.py
 import pytest
 from selenium.webdriver.common.by import By
 import time
@@ -43,3 +44,43 @@ def test_add_and_remove_element(open_browser): # Use open_browser fixture
 
 if __name__ == "__main__": # Correct condition for running tests
     pytest.main() 
+
+#########
+""" Другой, более подходящий способ """
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from config import URL_CITE # Assuming you have a config.py file with URL_CITE defined
+
+def test_add_and_remove_element(browser):
+    """Тест добавления и удаления элементов на странице Add/Remove Elements"""
+
+    browser.get(URL_CITE)
+    assert "The Internet" in browser.title
+
+    add_remove_link = browser.find_element(By.LINK_TEXT, "Add/Remove Elements")
+    add_remove_link.click()
+
+    # Click the add button multiple times
+    add_button = browser.find_element(By.XPATH, "//*[@id='content']/div/button[text()='Add Element']")
+    for _ in range(5):
+        add_button.click()
+
+    # Count the number of added elements
+    elements = WebDriverWait(browser, timeout=10).until(
+        EC.presence_of_all_elements_located((By.XPATH, '//*[@id="elements"]/button'))
+    )
+    assert len(elements) == 5
+
+    # Remove elements iteratively
+    for _ in range(3):
+        remove_button = WebDriverWait(browser, timeout=10).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[@id='elements']/button[text()='Delete']"))
+        )
+        remove_button.click()
+
+    # Count the remaining elements
+    elements = WebDriverWait(browser, timeout=10).until(
+        EC.presence_of_all_elements_located((By.XPATH, '//*[@id="elements"]/button'))
+    )
+    assert len(elements) == 2
