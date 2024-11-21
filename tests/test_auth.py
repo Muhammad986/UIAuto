@@ -13,5 +13,5 @@ def test_basic_auth(browser):
     
     browser.get(URL_CITE_AUTH)
     element = browser.find_element(By.TAG_NAME, "p")
-    time.sleep(3)
+    time.sleep(2)
     assert "Congratulations" in element.text
