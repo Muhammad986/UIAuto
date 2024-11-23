@@ -46,12 +46,12 @@ def get_img(browser):
     broken_images = []
     for img in images:
         src = img.get('src')
-        base_url = browser.current_url
-        full_url = urljoin(base_url, src)
+        base_url = browser.current_url #Получает текущий URL страницы из объекта Selenium webdriver.
+        full_url = urljoin(base_url, src) #Создает полный URL изображения.
         try:
-            response = requests.get(full_url)
+            response = requests.get(full_url) #Отправляет HTTP-запрос к URL изображения.
             if response.status_code != 200:
-                broken_images.append(src) # сохраняем исходный src, а не full_url для наглядности
+                broken_images.append(src) # сохраняем исходный src, а не full_url для наглядности.
         except requests.exceptions.RequestException:
             broken_images.append(src)
             

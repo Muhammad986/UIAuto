@@ -1,0 +1,16 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from config import URL_CITE
+
+def test_challenging_dom(browser):
+    browser.get(URL_CITE)
+    browser.find_element(By.LINK_TEXT, "Challenging DOM").click()
+
+    try:
+        answer = browser.execute_script("return window.someVariableWithAnswer;") # Замените 'window.someVariableWithAnswer' на то, как вычисляется число в JS коде страницы.
+        print(f"Вывод : {answer}")
+    except Exception as e:
+        print(f"Ошибка при получении значения: {e}")
+

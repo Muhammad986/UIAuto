@@ -1,0 +1,33 @@
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from config import URL_CITE
+import time
+    
+def test_checkboxes(browser):
+    browser.get(URL_CITE)
+    browser.find_element(By.LINK_TEXT, "Checkboxes").click()
+
+    checkbox1 = browser.find_element(By.XPATH, '//*[@id="checkboxes"]/input[1]')
+    checkbox2 = browser.find_element(By.XPATH, '//*[@id="checkboxes"]/input[2]')
+
+    # Проверка и изменение состояния checkbox1
+    initial_state1 = checkbox1.is_selected()
+    checkbox1.click()
+    WebDriverWait(browser, 10).until(lambda browser: browser.find_element(By.XPATH, '//*[@id="checkboxes"]/input[1]').is_selected() != initial_state1)
+    assert checkbox1.is_selected() != initial_state1, "Checkbox 1 не изменил состояние"
+
+    checkbox1.click()
+    WebDriverWait(browser, 10).until(lambda browser: browser.find_element(By.XPATH, '//*[@id="checkboxes"]/input[1]').is_selected() == initial_state1)
+    assert checkbox1.is_selected() == initial_state1, "Checkbox 1 не вернулся в начальное состояние"
+
+
+    # Проверка и изменение состояния checkbox2
+    initial_state2 = checkbox2.is_selected()
+    checkbox2.click()
+    WebDriverWait(browser, 10).until(lambda browser: browser.find_element(By.XPATH, '//*[@id="checkboxes"]/input[2]').is_selected() != initial_state2)
+    assert checkbox2.is_selected() != initial_state2, "Checkbox 2 не изменил состояние"
+
+    checkbox2.click()
+    WebDriverWait(browser, 10).until(lambda browser: browser.find_element(By.XPATH, '//*[@id="checkboxes"]/input[2]').is_selected() == initial_state2)
+    assert checkbox2.is_selected() == initial_state2, "Checkbox 2 не вернулся в начальное состояние"
